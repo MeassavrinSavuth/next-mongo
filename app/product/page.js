@@ -8,20 +8,23 @@ export default function Home() {
   const [products, setProducts] = useState([]);
   const [category, setCategory] = useState([]);
 
+  // Use environment variable for API base URL
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
+
   async function fetchProducts() {
-    const data = await fetch("http://localhost:3000/api/product");
+    const data = await fetch(`${API_BASE}/product`);
     const p = await data.json();
     setProducts(p);
   }
 
   async function fetchCategory() {
-    const data = await fetch("http://localhost:3000/api/category");
+    const data = await fetch(`${API_BASE}/category`);
     const c = await data.json();
     setCategory(c);
   }
 
   const createProduct = (data) => {
-    fetch("http://localhost:3000/api/product", {
+    fetch(`${API_BASE}/product`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -32,12 +35,12 @@ export default function Home() {
 
   const deleteById = (id) => async () => {
     if (!confirm("Are you sure?")) return;
-    
-    await fetch(`http://localhost:3000/api/product/${id}`, {
+
+    await fetch(`${API_BASE}/product/${id}`, {
       method: "DELETE",
     });
     fetchProducts();
-  }
+  };
 
   useEffect(() => {
     fetchCategory();
@@ -78,7 +81,7 @@ export default function Home() {
             <div>Price:</div>
             <div>
               <input
-                name="name"
+                name="price"
                 type="number"
                 {...register("price", { required: true })}
                 className="border border-black w-full"
@@ -109,16 +112,15 @@ export default function Home() {
       <div className="border m-4 bg-slate-300 flex-1 w-64">
         <h1 className="text-2xl">Products ({products.length})</h1>
         <ul className="list-disc ml-8">
-          {
-            products.map((p) => (
-              <li key={p._id}>
-                <button className="border border-black p-1/2" onClick={deleteById(p._id)}>❌</button>{' '}
-                <Link href={`/product/${p._id}`} className="font-bold">
-                  {p.name}
-                </Link>{" "}
-                - {p.description}
-              </li>
-            ))}
+          {products.map((p) => (
+            <li key={p._id}>
+              <button className="border border-black p-1/2" onClick={deleteById(p._id)}>❌</button>{' '}
+              <Link href={`/product/${p._id}`} className="font-bold">
+                {p.name}
+              </Link>{" "}
+              - {p.description}
+            </li>
+          ))}
         </ul>
       </div>
     </div>
